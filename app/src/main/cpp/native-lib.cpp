@@ -7,6 +7,7 @@
 #include "spectrum/filters/NonMaxSuppression.h"
 #include "PointerSwitcher.h"
 #include <android/log.h>
+#include "Music.h"
 
 #define STR_(x) #x
 #define STR(x) STR_(x)
@@ -37,7 +38,7 @@ Java_com_proid_apiscore_MainActivity_fillBytes(JNIEnv *env, jobject, jbyteArray 
 #define SR 44100
 
 static bool on;
-static SpectrumDefinition spectrum(-1*12, 2*12);
+static SpectrumDefinition spectrum(3*SEMITONES_PER_SCALE, 3*SEMITONES_PER_SCALE);
 static SampledSpectrumDefinition sampledSpectrum(spectrum, VECSAMPS, SR);
 static PointerSwitcher<Spectrum> intensityPtrs(new Spectrum(spectrum.size), new Spectrum(spectrum.size));
 

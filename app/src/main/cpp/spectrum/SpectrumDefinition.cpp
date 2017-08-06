@@ -5,23 +5,24 @@
 #include <cmath>
 #include <sstream>
 #include "SpectrumDefinition.h"
+#include "../Music.h"
 
 
-SpectrumDefinition::SpectrumDefinition(int startFromA4, int endFromA4) :
-        size(endFromA4 - startFromA4),
+SpectrumDefinition::SpectrumDefinition(int start, unsigned int length) :
+        size(length),
         frequency(size),
         name(size)
 {
-    std::vector<std::string> names = {"A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"};
+    std::vector<std::string> names = SEMITONE_NAMES;
 
-    for(int i = startFromA4; i < endFromA4; i++) {
-        frequency[i - startFromA4] = A4_FREQUENCY * pow(2.f, i / 12.f);
+    for(int i = 0; i < length; i++) {
+        int note_id = i + start;
+        frequency[i] = A4_FREQUENCY * pow(2.f, (float) (note_id-A4_ID) / SEMITONES_PER_SCALE);
+
         std::stringstream ss;
-        int v = i+4*12;
-        if(v < 0)
-            ss << names[(v % 12 + 12) % 12] << ((v+1)/12 - 1);
-        else
-            ss << names[v % 12] << (v / 12);
-        name[i - startFromA4] = ss.str();
+        ss << names[semitonesFromNoteId(note_id)];
+        ss << octaveFromINoted(note_id+1);
+
+        name[i] = ss.str();
     }
 }

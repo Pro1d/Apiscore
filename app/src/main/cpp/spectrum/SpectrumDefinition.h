@@ -8,12 +8,11 @@
 #include <vector>
 #include <string>
 
-#define A4_FREQUENCY    440 // Hz
 
 struct SpectrumDefinition {
-    SpectrumDefinition(int startFromA3, int endFromA3);
+    SpectrumDefinition(int start, unsigned int length);
 
-    const int size;
+    const unsigned int size;
     std::vector<float> frequency;
     std::vector<std::string> name;
 
