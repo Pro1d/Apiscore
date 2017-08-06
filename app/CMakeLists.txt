@@ -26,6 +26,7 @@ add_library( # Sets the name of the library.
              src/main/cpp/spectrum/Spectrum.cpp
              src/main/cpp/FrequencyAnalyzer.cpp
              src/main/cpp/MicrophoneRecorder2.cpp
+             src/main/cpp/MusicNote.cpp
              src/main/cpp/spectrum/filters/NonMaxSuppression.cpp
              src/main/cpp/spectrum/filters/MeanNoiseRemoval.cpp)
 

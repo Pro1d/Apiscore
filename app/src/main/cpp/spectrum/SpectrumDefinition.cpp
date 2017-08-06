@@ -5,7 +5,7 @@
 #include <cmath>
 #include <sstream>
 #include "SpectrumDefinition.h"
-#include "../Music.h"
+#include "../MusicNote.h"
 
 
 SpectrumDefinition::SpectrumDefinition(int start, unsigned int length) :
@@ -13,16 +13,10 @@ SpectrumDefinition::SpectrumDefinition(int start, unsigned int length) :
         frequency(size),
         name(size)
 {
-    std::vector<std::string> names = SEMITONE_NAMES;
+    MusicNote note(start);
 
     for(int i = 0; i < length; i++) {
-        int note_id = i + start;
-        frequency[i] = A4_FREQUENCY * pow(2.f, (float) (note_id-A4_ID) / SEMITONES_PER_SCALE);
-
-        std::stringstream ss;
-        ss << names[semitonesFromNoteId(note_id)];
-        ss << octaveFromINoted(note_id+1);
-
-        name[i] = ss.str();
+        frequency[i] = note.getFrequency();
+        name[i] = note.getNoteNameWithOctave();
     }
 }

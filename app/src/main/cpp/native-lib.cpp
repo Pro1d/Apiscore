@@ -7,7 +7,7 @@
 #include "spectrum/filters/NonMaxSuppression.h"
 #include "PointerSwitcher.h"
 #include <android/log.h>
-#include "Music.h"
+#include "MusicNote.h"
 
 #define STR_(x) #x
 #define STR(x) STR_(x)
