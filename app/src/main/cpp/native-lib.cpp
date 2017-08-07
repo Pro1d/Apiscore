@@ -1,7 +1,7 @@
 #include <jni.h>
 #include <string>
 #include <algorithm>
-#include "MicrophoneRecorder2.h"
+#include "microphone/MicrophoneRecorder.h"
 #include "FrequencyAnalyzer.h"
 #include "spectrum/filters/MeanNoiseRemoval.h"
 #include "spectrum/filters/NonMaxSuppression.h"
@@ -38,14 +38,18 @@ Java_com_proid_apiscore_MainActivity_fillBytes(JNIEnv *env, jobject, jbyteArray 
 #define SR 44100
 
 static bool on;
-static SpectrumDefinition spectrum(3*SEMITONES_PER_SCALE, 3*SEMITONES_PER_SCALE);
-static SampledSpectrumDefinition sampledSpectrum(spectrum, VECSAMPS, SR);
-static PointerSwitcher<Spectrum> intensityPtrs(new Spectrum(spectrum.size), new Spectrum(spectrum.size));
+static SpectrumDefinition::Ptr spectrum;
+static SampledSpectrumDefinition::Ptr sampledSpectrum;
+static PointerSwitcher<Spectrum> intensityPtrs;;
 
 extern "C"
 JNIEXPORT void JNICALL
 Java_com_proid_apiscore_MicrophoneRecorder_startProcess()
 {
+    spectrum.reset(new SpectrumDefinition(3*SEMITONES_PER_SCALE, 3*SEMITONES_PER_SCALE));
+    sampledSpectrum.reset(new  SampledSpectrumDefinition(*spectrum, VECSAMPS, SR));
+    intensityPtrs.reset(new Spectrum(spectrum->size), new Spectrum(spectrum->size));
+
     OpenSLInputStream inputStream(SR, BUFFERFRAMES);
     FrequencyAnalyzer fa(SR);
 
@@ -56,7 +60,7 @@ Java_com_proid_apiscore_MicrophoneRecorder_startProcess()
         Spectrum::Ptr& intensity = intensityPtrs.getWrite();
 
         int samps = inputStream.readNextBuffer(inbuffer);
-        fa.getSpectrumIntensity(inbuffer, samps, sampledSpectrum, intensity);
+        fa.getSpectrumIntensity(inbuffer, samps, *sampledSpectrum, intensity);
 
         intensity->printStat();
 
@@ -103,7 +107,12 @@ extern "C"
 JNIEXPORT jfloatArray JNICALL
 Java_com_proid_apiscore_MicrophoneRecorder_getSpectrumFrequency(JNIEnv *env)
 {
-    return vectorToJFloatArray<float>(env, spectrum.frequency);
+    if(spectrum == nullptr) {
+        ERROR_JNI_CALL("Must call startProcess first");
+        return env->NewFloatArray(0);
+    }
+
+    return vectorToJFloatArray<float>(env, spectrum->frequency);
 }
 
 extern "C"
@@ -124,11 +133,16 @@ extern "C"
 JNIEXPORT jobjectArray JNICALL
 Java_com_proid_apiscore_MicrophoneRecorder_getSpectrumName(JNIEnv *env)
 {
-    int size = spectrum.name.size();
+    if(spectrum == nullptr) {
+        ERROR_JNI_CALL("Must call startProcess first");
+        return env->NewObjectArray(0, env->FindClass("java/lang/String"), env->NewStringUTF(""));
+    }
+
+    int size = spectrum->name.size();
     jobjectArray result = (jobjectArray) env->NewObjectArray(size, env->FindClass("java/lang/String"), env->NewStringUTF(""));
 
     for(int i = 0; i < size; i++)
-        env->SetObjectArrayElement(result, i, env->NewStringUTF(spectrum.name[i].c_str()));
+        env->SetObjectArrayElement(result, i, env->NewStringUTF(spectrum->name[i].c_str()));
 
     return result;
 }

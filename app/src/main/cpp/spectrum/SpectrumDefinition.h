@@ -7,9 +7,12 @@
 
 #include <vector>
 #include <string>
+#include <memory>
 
 
 struct SpectrumDefinition {
+    typedef std::shared_ptr<SpectrumDefinition> Ptr;
+
     SpectrumDefinition(int start, unsigned int length);
 
     const unsigned int size;

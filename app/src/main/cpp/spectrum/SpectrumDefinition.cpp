@@ -15,7 +15,7 @@ SpectrumDefinition::SpectrumDefinition(int start, unsigned int length) :
 {
     MusicNote note(start);
 
-    for(int i = 0; i < length; i++) {
+    for(int i = 0; i < length; i++, ++note) {
         frequency[i] = note.getFrequency();
         name[i] = note.getNoteNameWithOctave();
     }

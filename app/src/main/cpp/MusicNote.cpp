@@ -3,7 +3,6 @@
 //
 
 #include "MusicNote.h"
-#include <sstream>
 
 const std::vector<std::string> MusicNote::semitoneNames = SEMITONE_NAMES;
 const std::regex MusicNote::noteAndOctaveNameRegex(SEMITONE_NAME_REGEX OCTAVE_NAME_REGEX);
@@ -22,7 +21,7 @@ MusicNote::MusicNote(int note, int octave) :
 }
 
 MusicNote::MusicNote(std::string const &nameWithOctave) :
-    noteId_(getIdFromNoteWithOctaveName(nameWithOctave))
+    noteId_(getIdFromNoteNameWithOctave(nameWithOctave))
 {
 
 }
@@ -48,12 +47,12 @@ int MusicNote::getNote()
 {
     int semitones = noteId_ % SEMITONES_PER_SCALE;
 
-    return semitones < 0 ? (semitones + SEMITONES_PER_SCALE) % SEMITONES_PER_SCALE : semitones;
+    return semitones < 0 ? semitones + SEMITONES_PER_SCALE : semitones;
 }
 
 std::string MusicNote::getNoteName()
 {
-    return semitoneNames[getNote()];
+    return MusicNote::semitoneNames[getNote()];
 }
 
 int MusicNote::getOctave()
@@ -80,9 +79,9 @@ double MusicNote::getFrequency()
     return A4_FREQUENCY * pow(2.0, (double) (noteId_-A4_ID) / SEMITONES_PER_SCALE);
 }
 
-int MusicNote::getIdFromNoteWithOctaveName(std::string const &name)
+int MusicNote::getIdFromNoteNameWithOctave(std::string const &name)
 {
-    if(isValidNoteNameWithOctave(name)) {
+    if(MusicNote::isValidNoteNameWithOctave(name)) {
         std::size_t nLength = (name[1] == '#' ? 2 : 1);
         auto it = std::find(MusicNote::semitoneNames.begin(), MusicNote::semitoneNames.end(),
                             name.substr(0, nLength));

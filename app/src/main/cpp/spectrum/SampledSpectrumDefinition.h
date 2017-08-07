@@ -10,6 +10,8 @@
 
 class SampledSpectrumDefinition : public std::vector<std::vector<std::pair<double, double>>> {
 public:
+    typedef std::shared_ptr<SampledSpectrumDefinition> Ptr;
+
     SampledSpectrumDefinition(SpectrumDefinition const& spec, int samplesCount, int samplingRate);
 };
 

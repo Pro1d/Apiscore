@@ -18,9 +18,9 @@
  */
 
 #define A4_FREQUENCY            440 // Hz
+#define A4_ID                   (4*SEMITONES_PER_SCALE + 9)
 #define SEMITONES_PER_SCALE     12
 #define NOTES_PER_SCALE         7
-#define A4_ID                   (4*SEMITONES_PER_SCALE + 9)
 #define SEMITONE_NAMES          {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"}
 #define REFERENCE_NAME          "C0"
 #define SEMITONE_NAME_REGEX     "[A-G]#?"
@@ -60,7 +60,7 @@ private:
     static const std::regex noteNameRegex;
 
     /** @return note id or 0 if name is invalid */
-    static int getIdFromNoteWithOctaveName(std::string const& name);
+    static int getIdFromNoteNameWithOctave(std::string const &name);
 };
 
 

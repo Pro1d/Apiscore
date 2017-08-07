@@ -13,6 +13,13 @@ class PointerSwitcher {
 public:
     PointerSwitcher(std::shared_ptr<T> const& p1, std::shared_ptr<T> const& p2) : read(p1), write(p2) {}
     PointerSwitcher(T* p1, T* p2) : read(p1), write(p2) {}
+    PointerSwitcher() : read(nullptr), write(nullptr) {}
+
+    void reset(T* p1, T* p2)
+    {
+        read.reset(p1);
+        write.reset(p2);
+    }
 
     std::unique_lock<std::mutex> lockForScope()
     {
