@@ -39,5 +39,7 @@ void Spectrum::printStat()
     auto biggest = std::max_element(begin(), end());
     int ibiggest = std::distance(begin(), biggest);
     auto mv = getMeanAndVariance();
-    __android_log_print(ANDROID_LOG_VERBOSE, "Spectrum", "size:%d mean:%f stddev:%f max:%f imax:%d", (int) size(), mv.first, sqrt(mv.second), *biggest, ibiggest);
+    __android_log_print(ANDROID_LOG_VERBOSE,
+                        "Spectrum", "size:%d mean:%f stddev:%f max:%f imax:%d t:%f",
+                        (int) size(), mv.first, sqrt(mv.second), *biggest, ibiggest, acquisitionEnd_-acquisitionStart_);
 }

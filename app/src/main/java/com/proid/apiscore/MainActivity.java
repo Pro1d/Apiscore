@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
                 while(running) {
                     tryDrawing(sv.getHolder());
                     try {
-                        Thread.sleep(100);
+                        Thread.sleep(50);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -94,8 +94,11 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
             buffer = Bitmap.createBitmap(canvas.getWidth(), canvas.getHeight(), Bitmap.Config.ARGB_8888);
         }
         Canvas c = new Canvas(buffer);
-        c.drawARGB(255,0,0,0);
+        c.drawBitmap(buffer, 1, -1, null);
+        c.drawARGB(2,0,0,0);
+
         Paint paint = new Paint();
+
         float[] intensity = MicrophoneRecorder.getSpectrumIntensity();
         String[] name = MicrophoneRecorder.getSpectrumName();
         int size = intensity.length;
@@ -106,7 +109,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
                 maxNote = i;
             mean += intensity[i];
         }
-        intensityMax = Math.max(intensity[maxNote], intensityMax * 0.95f);
+        intensityMax = Math.max(intensity[maxNote], intensityMax * 0.99f);
         float scale = intensityMax > 0 ? 1/intensityMax : 1;
         mean /= size;
         float var = 0;
@@ -136,20 +139,21 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
             c.drawText(name[i], 10, (int) (y2 - ((y2-y) - textSize)/2), paint);
         }
         // Mean & StdDev lines
-        int mx = (int) (staticWidth + histogramWidth * mean * scale);
+        /*int mx = (int) (staticWidth + histogramWidth * mean * scale);
         int s1x = (int) (staticWidth + histogramWidth * (mean + stddev) * scale);
         int s2x = (int) (staticWidth + histogramWidth * (mean - stddev) * scale);
         paint.setColor(0xffAA5555);
         c.drawLine(mx, 0, mx, c.getHeight(), paint);
         paint.setColor(0xffBB8888);
         c.drawLine(s1x, 0, s1x, c.getHeight(), paint);
-        c.drawLine(s2x, 0, s2x, c.getHeight(), paint);
+        c.drawLine(s2x, 0, s2x, c.getHeight(), paint);*/
+
+        canvas.drawBitmap(buffer, 0, 0, null);
 
         if(intensity[maxNote] > 0.03)
-            drawNoteAndStaff(c, name[maxNote], 0xffffffff, c.getWidth()-c.getWidth()/2, 0, c.getWidth()/2, c.getWidth()/2);
+            drawNoteAndStaff(canvas, name[maxNote], 0xffffffff, c.getWidth()-c.getWidth()/2, 0, c.getWidth()/2, c.getWidth()/2);
         else
-            drawNoteAndStaff(c, "", 0xffffffff, c.getWidth()-c.getWidth()/2, 0, c.getWidth()/2, c.getWidth()/2);
-        canvas.drawBitmap(buffer, 0, 0, null);
+            drawNoteAndStaff(canvas, "", 0xffffffff, c.getWidth()-c.getWidth()/2, 0, c.getWidth()/2, c.getWidth()/2);
     }
 
     void drawNoteAndStaff(Canvas c, String noteName, int color, int x, int y, int w, int h) {

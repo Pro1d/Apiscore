@@ -8,6 +8,8 @@
 #include "PointerSwitcher.h"
 #include <android/log.h>
 #include "MusicNote.h"
+#include "spectrum/SpectrumHistory.h"
+#include "CircularBuffer.h"
 
 #define STR_(x) #x
 #define STR(x) STR_(x)
@@ -33,50 +35,70 @@ Java_com_proid_apiscore_MainActivity_fillBytes(JNIEnv *env, jobject, jbyteArray 
     env->ReleaseByteArrayElements(bytes, tempPointer, 0);
 }
 
-#define BUFFERFRAMES 4410
-#define VECSAMPS 4410
-#define SR 44100
+#define SR                      44100 // Hertz
+#define PROCESS_PERIOD          20 // milliseconds
+#define OVERLAPPING_PERIODS     2
+#define BUFFER_PERIOD           (PROCESS_PERIOD / OVERLAPPING_PERIODS)
+#define BUFFER_SAMPLES          (SR * BUFFER_PERIOD / 1000)
+#define PROCESS_SAMPLES         (SR * PROCESS_PERIOD / 1000)
+#define HISTORY_TIME            1000 // milliseconds
+#define HISTORY_SIZE            (HISTORY_TIME * OVERLAPPING_PERIODS / PROCESS_PERIOD)
 
 static bool on;
 static SpectrumDefinition::Ptr spectrum;
 static SampledSpectrumDefinition::Ptr sampledSpectrum;
-static PointerSwitcher<Spectrum> intensityPtrs;;
+static PointerSwitcher<Spectrum> intensityPtrs;
+static SpectrumHistory::Ptr spectrumHistory;
 
 extern "C"
 JNIEXPORT void JNICALL
 Java_com_proid_apiscore_MicrophoneRecorder_startProcess()
 {
-    spectrum.reset(new SpectrumDefinition(3*SEMITONES_PER_SCALE, 3*SEMITONES_PER_SCALE));
-    sampledSpectrum.reset(new  SampledSpectrumDefinition(*spectrum, VECSAMPS, SR));
+    spectrum.reset(new SpectrumDefinition(3*SEMITONES_PER_SCALE, 5*SEMITONES_PER_SCALE));
+    sampledSpectrum.reset(new  SampledSpectrumDefinition(*spectrum, PROCESS_SAMPLES, SR));
     intensityPtrs.reset(new Spectrum(spectrum->size), new Spectrum(spectrum->size));
+    spectrumHistory.reset(new SpectrumHistory(HISTORY_SIZE));
+    CircularBuffer<float> cbuffer(PROCESS_SAMPLES);
 
-    OpenSLInputStream inputStream(SR, BUFFERFRAMES);
+    OpenSLInputStream inputStream(SR, BUFFER_SAMPLES);
     FrequencyAnalyzer fa(SR);
 
-    std::vector<float> inbuffer(VECSAMPS);
+    std::vector<float> inbuffer(BUFFER_SAMPLES);
     on = true;
     while(on && !inputStream.getError()) {
         intensityPtrs.lockForScope();
         Spectrum::Ptr& intensity = intensityPtrs.getWrite();
 
-        int samps = inputStream.readNextBuffer(inbuffer);
-        fa.getSpectrumIntensity(inbuffer, samps, *sampledSpectrum, intensity);
+        double timeBegin = inputStream.getTimestamp();
+        inputStream.readNextBuffer(inbuffer);
+        double timeEnd = inputStream.getTimestamp();
+
+        cbuffer.push(inbuffer);
+
+        intensity->setAcquisitionStart(timeBegin);
+        intensity->setAcquisitionEnd(timeEnd);
+        fa.getSpectrumIntensity(cbuffer, PROCESS_SAMPLES, *sampledSpectrum, intensity);
 
         intensity->printStat();
 
         Spectrum::Ptr tmp(new Spectrum);
 
         //*tmp = *intensity;
+        /*
         MeanNoiseRemoval mnr(3.);
         mnr.setInput(intensity);
-        mnr.filter(*tmp);
+        mnr.filter(*tmp);//*/
+        //*intensity = *tmp;
+        /*
         NonMaxSuppression nms;
         nms.setInput(tmp);
-        nms.filter(*intensity);
-        *intensity = *tmp;
+        nms.filter(*intensity);//*/
+
 
         //__android_log_print(ANDROID_LOG_VERBOSE, "###", "Read %d samples", samps);
         intensity->printStat();
+
+        spectrumHistory->addSpectrum(*intensity);
 
         intensityPtrs.unsafeSwitchReadWrite();
     }

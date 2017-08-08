@@ -24,6 +24,7 @@ add_library( # Sets the name of the library.
              src/main/cpp/spectrum/SpectrumDefinition.cpp
              src/main/cpp/spectrum/SampledSpectrumDefinition.cpp
              src/main/cpp/spectrum/Spectrum.cpp
+             src/main/cpp/spectrum/SpectrumHistory.cpp
              src/main/cpp/FrequencyAnalyzer.cpp
              src/main/cpp/microphone/MicrophoneRecorder.cpp
              src/main/cpp/MusicNote.cpp
