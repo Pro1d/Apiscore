@@ -5,7 +5,7 @@
 #include <cmath>
 #include <sstream>
 #include "SpectrumDefinition.h"
-#include "../MusicNote.h"
+#include "../Music/NotePitch.h"
 
 
 SpectrumDefinition::SpectrumDefinition(int start, unsigned int length) :
@@ -13,7 +13,7 @@ SpectrumDefinition::SpectrumDefinition(int start, unsigned int length) :
         frequency(size),
         name(size)
 {
-    MusicNote note(start);
+    NotePitch note(start);
 
     for(int i = 0; i < length; i++, ++note) {
         frequency[i] = note.getFrequency();

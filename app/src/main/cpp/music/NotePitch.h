@@ -27,17 +27,17 @@
 #define OCTAVE_NAME_REGEX       "-?[1-9]*[0-9]"
 // TODO SEMITONE_NAME_REGEX     "[A-G][#b]*"
 
-class MusicNote {
+class NotePitch {
 public:
     enum SemitoneId : int {C, Cs, Db=Cs, D, Ds, Eb=Ds, E, F, Fs, Gb=Fs, G, Gs, Ab=Gs, A, As, Bb=As, B};
 
-    MusicNote(int id);
-    MusicNote(int note, int octave);
-    MusicNote(std::string const& nameWithOctave);
+    NotePitch(int id);
+    NotePitch(int note, int octave);
+    NotePitch(std::string const& nameWithOctave);
 
     int getId();
-    MusicNote& operator++();
-    MusicNote& operator--();
+    NotePitch& operator++();
+    NotePitch& operator--();
 
     int getNote();
     std::string getNoteName();

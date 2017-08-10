@@ -7,7 +7,7 @@
 #include "spectrum/filters/NonMaxSuppression.h"
 #include "PointerSwitcher.h"
 #include <android/log.h>
-#include "MusicNote.h"
+#include "Music/NotePitch.h"
 #include "spectrum/SpectrumHistory.h"
 #include "CircularBuffer.h"
 
