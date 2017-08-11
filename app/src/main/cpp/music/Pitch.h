@@ -2,8 +2,8 @@
 // Created by pgg on 06/08/17.
 //
 
-#ifndef APISCORE_MUSIC_H
-#define APISCORE_MUSIC_H
+#ifndef APISCORE_NOTEPITCH_H
+#define APISCORE_NOTEPITCH_H
 
 #include <regex>
 #include <vector>
@@ -27,17 +27,19 @@
 #define OCTAVE_NAME_REGEX       "-?[1-9]*[0-9]"
 // TODO SEMITONE_NAME_REGEX     "[A-G][#b]*"
 
-class NotePitch {
+class Pitch {
 public:
     enum SemitoneId : int {C, Cs, Db=Cs, D, Ds, Eb=Ds, E, F, Fs, Gb=Fs, G, Gs, Ab=Gs, A, As, Bb=As, B};
 
-    NotePitch(int id);
-    NotePitch(int note, int octave);
-    NotePitch(std::string const& nameWithOctave);
+    Pitch(int id);
+    Pitch(int note, int octave);
+    Pitch(std::string const& nameWithOctave);
 
     int getId();
-    NotePitch& operator++();
-    NotePitch& operator--();
+    Pitch& operator++();
+    Pitch& operator--();
+    Pitch const& operator+=(int i);
+    Pitch const& operator+(int i);
 
     int getNote();
     std::string getNoteName();

@@ -8,6 +8,7 @@
 #include <vector>
 #include <string>
 #include <memory>
+#include "../music/Pitch.h"
 
 
 struct SpectrumDefinition {
@@ -16,6 +17,7 @@ struct SpectrumDefinition {
     SpectrumDefinition(int start, unsigned int length);
 
     const unsigned int size;
+    Pitch firstNote;
     std::vector<float> frequency;
     std::vector<std::string> name;
 

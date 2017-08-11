@@ -5,15 +5,16 @@
 #include <cmath>
 #include <sstream>
 #include "SpectrumDefinition.h"
-#include "../Music/NotePitch.h"
+#include "../music/Pitch.h"
 
 
 SpectrumDefinition::SpectrumDefinition(int start, unsigned int length) :
         size(length),
+        firstNote(start),
         frequency(size),
         name(size)
 {
-    NotePitch note(start);
+    Pitch note(firstNote);
 
     for(int i = 0; i < length; i++, ++note) {
         frequency[i] = note.getFrequency();
