@@ -29,6 +29,9 @@ add_library( # Sets the name of the library.
              src/main/cpp/microphone/MicrophoneRecorder.cpp
              src/main/cpp/music/Pitch.cpp
              src/main/cpp/music/Value.cpp
+             src/main/cpp/music/Score.cpp
+             src/main/cpp/music/Tempo.cpp
+             src/main/cpp/music/TimeSignature.cpp
              src/main/cpp/spectrum/filters/NonMaxSuppression.cpp
              src/main/cpp/spectrum/filters/MeanNoiseRemoval.cpp)
 

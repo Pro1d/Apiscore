@@ -32,6 +32,7 @@ public class MicrophoneRecorder {
     public static native String[] getSpectrumName();
     public static native float[] getSpectrumFrequency();
     public static native float[] getSpectrumIntensity();
+    public static native String[] getScore();
     /*
     static native void create();
     static native void destroy();
